@@ -129,11 +129,14 @@ class Dash_Command extends EE_Command {
 				EE::launch( 'echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILbESQqRcGdwnn/u1BkDCD9rDiFqgDhTHBHIIasaDpWV EasyEngine" >> /root/.ssh/authorized_keys' );
 			}
 
-			$server_data  = [
-				"hostname"      => $hostname,
-				"public_ipv4"   => $public_ipv4,
-				"organization"  => $organization,
-			];
+		$ee_version = EE_VERSION;
+
+		$server_data  = [
+			"hostname"      => $hostname,
+			"public_ipv4"   => $public_ipv4,
+			"organization"  => $organization,
+			"ee_version"    => $ee_version,
+		];
 
 			$server_data_json = json_encode( $server_data );
 
