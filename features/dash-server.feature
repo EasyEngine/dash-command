@@ -10,7 +10,7 @@ Feature: ee dash init server registration
     Then the return code should be 0
     And STDOUT should contain:
       """
-      Server with IP 203.0.113.10 already exists on EasyDash. Skipping server addition.
+      Server with IP 203.0.113.10 already exists on EasyEngine Dashboard. Skipping server addition.
       """
     And the EasyDash stub should have received 1 get_server_list request
     And the EasyDash stub should have received no add_server requests
@@ -34,7 +34,7 @@ Feature: ee dash init server registration
     Then the return code should be 0
     And STDOUT should contain:
       """
-      Success: Server integrated with EasyDash successfully. Please wait for sometime for site data to populate on EasyDash.
+      Success: Server integrated with EasyEngine Dashboard successfully. Please wait for sometime for site data to populate on EasyEngine Dashboard.
       """
     And the EasyDash stub should have received 1 get_server_list request
     And the EasyDash stub should have received 1 add_server request
@@ -80,7 +80,7 @@ Feature: ee dash init server registration
     Then the return code should be 0
     And STDOUT should contain:
       """
-      Server with IP 203.0.113.10 already exists on EasyDash. Skipping server addition.
+      Server with IP 203.0.113.10 already exists on EasyEngine Dashboard. Skipping server addition.
       """
     And the EasyDash stub should have received 2 get_server_list requests
     And the EasyDash stub should have received 1 add_server request
@@ -136,7 +136,7 @@ Feature: ee dash init server registration
     When I run "bin/ee dash init --api=bh-dash-{RUN_ID} --org=bh-dash-org --ip=203.0.113.10 --hostname=bh-dash.example.test" in the EasyDash sandbox
     Then STDERR should contain:
       """
-      Warning: Failed to integrate server with EasyDash. Response: {"exc":"bh-dash registration refused"}
+      Warning: Failed to integrate server with EasyEngine Dashboard. Response: {"exc":"bh-dash registration refused"}
       """
     And STDERR should contain:
       """
@@ -144,7 +144,7 @@ Feature: ee dash init server registration
       """
     And STDOUT should not contain:
       """
-      Server integrated with EasyDash successfully
+      Server integrated with EasyEngine Dashboard successfully
       """
 
   # Fails at the server lookup today and at add_server once the lookup's fallback works, so the key count isn't asserted.
@@ -167,7 +167,7 @@ Feature: ee dash init server registration
       """
     And STDOUT should not contain:
       """
-      Server integrated with EasyDash successfully
+      Server integrated with EasyEngine Dashboard successfully
       """
 
   Scenario: An ed-api-url without a trailing slash is normalised

@@ -6,11 +6,11 @@ Feature: ee dash command surface and argument validation
     Then the return code should be 0
     And STDOUT should contain:
       """
-      Manages EasyDash integration.
+      Manages EasyEngine Dashboard integration.
       """
     And STDOUT should contain:
       """
-      init      Integrates server on EasyDash dashboard.
+      init      Integrates the server with the EasyEngine Dashboard.
       """
 
   Scenario: ee dash without a subcommand prints its usage
@@ -33,7 +33,16 @@ Feature: ee dash command surface and argument validation
       """
     And STDOUT should contain:
       """
-      ED Organization name in which server needs to be added.
+      EasyEngine Dashboard API key.
+      """
+    # Help wraps at the terminal width (80 without a tty), so only the first line of the --org description is matched.
+    And STDOUT should contain:
+      """
+      EasyEngine Dashboard organization name in which the server needs to be
+      """
+    And STDOUT should contain:
+      """
+      $ ee dash init --api=xxx --org=my-org
       """
 
   Scenario: An unknown dash subcommand is rejected
@@ -50,7 +59,7 @@ Feature: ee dash command surface and argument validation
     Then the return code should be 1
     And STDERR should contain:
       """
-      Error: Please provide an EasyDash API key using the --api=<token:key> flag.
+      Error: Please provide an EasyEngine Dashboard API key using the --api=<token:key> flag.
       """
     And the EasyDash stub should not have received any request
     And the sandboxed authorized_keys file should contain the EasyEngine key 0 times
@@ -61,7 +70,7 @@ Feature: ee dash command surface and argument validation
     Then the return code should be 1
     And STDERR should contain:
       """
-      Error: Please provide an EasyDash API key using the --api=<token:key> flag.
+      Error: Please provide an EasyEngine Dashboard API key using the --api=<token:key> flag.
       """
     And the EasyDash stub should not have received any request
 
@@ -71,7 +80,7 @@ Feature: ee dash command surface and argument validation
     Then the return code should be 1
     And STDERR should contain:
       """
-      Error: Please provide an EasyDash organization name using the --org=<org-name> flag.
+      Error: Please provide an EasyEngine Dashboard organization name using the --org=<org-name> flag.
       """
     And the EasyDash stub should not have received any request
 
@@ -81,7 +90,7 @@ Feature: ee dash command surface and argument validation
     Then the return code should be 1
     And STDERR should contain:
       """
-      Error: Please provide an EasyDash organization name using the --org=<org-name> flag.
+      Error: Please provide an EasyEngine Dashboard organization name using the --org=<org-name> flag.
       """
     And the EasyDash stub should not have received any request
 
@@ -120,7 +129,7 @@ Feature: ee dash command surface and argument validation
       """
     And STDERR should contain:
       """
-      Please provide an EasyDash API key
+      Please provide an EasyEngine Dashboard API key
       """
     And the EasyDash stub should not have received any request
 
@@ -134,7 +143,7 @@ Feature: ee dash command surface and argument validation
       """
     And STDERR should contain:
       """
-      Please provide an EasyDash organization name
+      Please provide an EasyEngine Dashboard organization name
       """
     And the EasyDash stub should not have received any request
 
@@ -145,7 +154,7 @@ Feature: ee dash command surface and argument validation
     Then the return code should be 1
     And STDERR should contain:
       """
-      Please provide an EasyDash API key
+      Please provide an EasyEngine Dashboard API key
       """
     And STDERR should not contain:
       """
@@ -159,7 +168,7 @@ Feature: ee dash command surface and argument validation
     Then the return code should be 1
     And STDERR should contain:
       """
-      Error: EasyDash integration is only supported on Ubuntu or Debian.
+      Error: EasyEngine Dashboard integration is only supported on Ubuntu or Debian.
       """
     And the EasyDash stub should not have received any request
     And the sandboxed authorized_keys file should contain the EasyEngine key 0 times
@@ -171,7 +180,7 @@ Feature: ee dash command surface and argument validation
     Then the return code should be 1
     And STDERR should contain:
       """
-      Error: EasyDash integration is only supported on Ubuntu 22.04 or later.
+      Error: EasyEngine Dashboard integration is only supported on Ubuntu 22.04 or later.
       """
     And the EasyDash stub should not have received any request
 
@@ -183,6 +192,6 @@ Feature: ee dash command surface and argument validation
     Then the return code should be 0
     And STDOUT should contain:
       """
-      Server with IP 203.0.113.10 already exists on EasyDash. Skipping server addition.
+      Server with IP 203.0.113.10 already exists on EasyEngine Dashboard. Skipping server addition.
       """
     And the EasyDash stub should have received 1 get_server_list request

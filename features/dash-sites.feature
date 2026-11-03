@@ -12,7 +12,7 @@ Feature: ee dash init site sync
     Then the return code should be 0
     And STDOUT should contain:
       """
-      Success: Site bh-dash-command-1.test integrated with EasyDash successfully.
+      Success: Site bh-dash-command-1.test integrated with EasyEngine Dashboard successfully.
       """
     And the EasyDash stub should have received no add_server requests
     And the sandboxed authorized_keys file should contain the EasyEngine key 0 times
@@ -151,7 +151,7 @@ Feature: ee dash init site sync
     Then the return code should be 0
     And STDOUT should contain:
       """
-      Site bh-dash-command-1.test already exists on EasyDash. Skipping site addition.
+      Site bh-dash-command-1.test already exists on EasyEngine Dashboard. Skipping site addition.
       """
     And the EasyDash stub should have received no add_site requests for 'bh-dash-command-1.test'
     And the EasyDash stub should have received 1 add_site request for 'bh-dash-command-2.test'
@@ -164,11 +164,11 @@ Feature: ee dash init site sync
     Then the return code should be 0
     And STDOUT should contain:
       """
-      Site bh-dash-command-1.test already exists on EasyDash. Skipping site addition.
+      Site bh-dash-command-1.test already exists on EasyEngine Dashboard. Skipping site addition.
       """
     And STDOUT should contain:
       """
-      Site bh-dash-command-2.test already exists on EasyDash. Skipping site addition.
+      Site bh-dash-command-2.test already exists on EasyEngine Dashboard. Skipping site addition.
       """
     And the EasyDash stub should have received 1 add_site request for 'bh-dash-command-1.test'
     And the EasyDash stub should have received 1 add_site request for 'bh-dash-command-2.test'
@@ -198,7 +198,7 @@ Feature: ee dash init site sync
       """
     When I run "bin/ee dash init --api=bh-dash-{RUN_ID} --org=bh-dash-org --ip=203.0.113.10 --hostname=bh-dash.example.test" in the EasyDash sandbox
     Then the return code should be 1
-    And STDERR should match '/Failed to integrate site \S+ with EasyDash\. Response: \{"exc":"bh-dash site refused"\}/'
+    And STDERR should match '/Failed to integrate site \S+ with EasyEngine Dashboard\. Response: \{"exc":"bh-dash site refused"\}/'
 
   Scenario: A site registration that times out aborts the sync with an error
     Given the test site 'bh-dash-command-1.test' exists, created with '--type=html --ssl=self'
@@ -218,7 +218,7 @@ Feature: ee dash init site sync
     Then the return code should be 0
     And STDERR should contain:
       """
-      Warning: Skipping site bh-dash-command-7.test integration with EasyDash as PHP version is less than 8.1.
+      Warning: Skipping site bh-dash-command-7.test integration with EasyEngine Dashboard as PHP version is less than 8.1.
       """
     And the EasyDash stub should have received no add_site requests for 'bh-dash-command-7.test'
 
@@ -254,7 +254,7 @@ Feature: ee dash init site sync
     Then the return code should be 0
     And STDOUT should contain:
       """
-      Site bh-dash-command-6.test already exists on EasyDash. Skipping site addition.
+      Site bh-dash-command-6.test already exists on EasyEngine Dashboard. Skipping site addition.
       """
     And the EasyDash stub should have received no add_site requests for 'bh-dash-command-6.test'
     And the site 'bh-dash-command-6.test' should have 'site_enabled' set to '0' in the EasyEngine database

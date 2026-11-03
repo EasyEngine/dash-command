@@ -1,6 +1,6 @@
 # dash-command Behat coverage
 
-Suite for `ee dash` (EasyDash integration), based on `upstream/develop` (`83f20d1`). Features: `dash.feature` (command surface, validation, OS checks), `dash-server.feature` (server lookup/registration, SSH key, hostname, API errors), `dash-sites.feature` (site sync payloads and edge cases).
+Suite for `ee dash` (EasyEngine Dashboard integration), based on `upstream/develop` (`d062d24`). Features: `dash.feature` (command surface, validation, OS checks), `dash-server.feature` (server lookup/registration, SSH key, hostname, API errors), `dash-sites.feature` (site sync payloads and edge cases).
 
 ## How the suite stays off the real service and the host
 
@@ -35,7 +35,7 @@ Legend: ✔ covered, ✘ not covered (reason), KB = known bug whose scenario is 
 |---|---|
 | `ee dash` (namespace help, usage) | ✔ dash: "ee help dash describes…", "ee dash without a subcommand…" |
 | Unknown subcommand | ✔ dash: "An unknown dash subcommand is rejected" |
-| `ee dash init` help/synopsis | ✔ dash: "ee help dash init documents every option"; KB (the example lacks `--org`) |
+| `ee dash init` help/synopsis | ✔ dash: "ee help dash init documents every option" (options and the `--org` example) |
 | `--api=<api-key>` required, trimmed, sent as `Token` header | ✔ dash: missing / whitespace-only; dash-server: "Option values are trimmed", header checks on every endpoint; bare `--api` / `--org` rejected (a suspected bug, refuted) |
 | `--org=<org-name>` required, trimmed, sent in every body | ✔ dash: missing / whitespace-only; dash-server: trimmed, lookup body; dash-sites: `organization` field |
 | `--ip=<ip-address>` | ✔ dash-server: payload `public_ipv4`, trimmed, server match by IP; KB (`--ip` not validated) |
@@ -142,12 +142,12 @@ No `@le`, `@remote` or `@destructive` scenarios. No `@known-bug` scenarios ship 
 | `init()` L89–95 | `--hostname` is validated, then overwritten by `gethostname()`; EasyDash always gets the machine hostname. | KB |
 | `init()` L52–63 | Refuted on CI: `SynopsisValidator` warns "--api parameter needs a value" and unsets a valueless `--api`/`--org` before `init()` runs, so the empty-value check fires. | regular scenarios (bare `--api`, bare `--org`) |
 | `init()` L109–115 | The FQDN prompt loops forever when STDIN is closed (`EE::input()` returns `""` on EOF), flooding warnings. Any non-interactive run without a valid `--hostname` hits it, since the confirmation also reads EOF as "no" (e.g. EasyDash firing init over SSH without `--hostname`). | KB |
-| all `try/catch (\RuntimeException)` blocks | `http_request()` defaults to `halt_on_error`, so transport errors call `EE::error()` inside it; the transport-error fallbacks ("assume the server doesn't exist", `get_external_ip()` → IP prompt) and the "Error connecting to EasyDash API…" messages are dead code. | KB (API lookup, IP lookup) |
+| all `try/catch (\RuntimeException)` blocks | `http_request()` defaults to `halt_on_error`, so transport errors call `EE::error()` inside it; the transport-error fallbacks ("assume the server doesn't exist", `get_external_ip()` → IP prompt) and the "Error connecting to EasyEngine Dashboard API…" messages are dead code. | KB (API lookup, IP lookup) |
 | `init()` L127–130 | The EasyDash root SSH key is appended before `add_server` and stays authorised when registration fails. `/root/.ssh` is hard-coded and a missing dir fails silently. | KB |
 | `server_exists_on_easydash()` L325–326 | The request headers, including the API token, are logged at debug level, which always goes to `ee.log` (on top of core's argv logging). | masked by core since v4.13.2 (the debug line remains, with the token as `******`) |
 | `init()` L247–251 | `multisite` is `app_sub_type` unless it is wp/php/html/empty, so PHP sites with a DB are sent as `"mysql"`. | KB |
 | `init()` L149–155 | A failed `add_server` only warns; the run syncs all sites for a server EasyDash doesn't know and exits 0. | KB |
-| docblock | The only example (`ee dash init --api=xxx`) omits the required `--org`. | KB |
+| docblock | The only example (`ee dash init --api=xxx`) omitted the required `--org`. | fixed on `develop` (`aa1aed2`); regular scenario ("ee help dash init documents every option") |
 | `pre_checks()` | Debian passes the distribution check but its release is compared with `22.04`, so Debian is always refused. | KB |
 | `init()` L74, lookups L313/L367 | Lookups use `ed_base_url . '/api/method/…'`, registration uses `ed_api_url . …`; an `ed-api-url` not ending in `/api/method/` sends them to different paths (`/proxy//api/method/…` vs `/proxy/…`). | KB |
 | `init()` L291–297 | One rejected or failed `add_site` (`EE::error`) stops the sync; later sites are never sent. | KB |
