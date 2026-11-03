@@ -7,14 +7,14 @@ use function EE\Site\Utils\get_site_info;
 use function EE\Utils\http_request;
 
 /**
- * Manages EasyDash integration.
+ * Manages EasyEngine Dashboard integration.
  *
  * @package ee-cli
  */
 class Dash_Command extends EE_Command {
 
 	/**
-	 * The base URL for the EasyDash API.
+	 * The base URL for the EasyEngine Dashboard API.
 	 *
 	 * @var string
 	 */
@@ -23,15 +23,15 @@ class Dash_Command extends EE_Command {
 	private $ed_base_url = '';
 
 	/**
-	 * Integrates server on EasyDash dashboard.
+	 * Integrates the server with the EasyEngine Dashboard.
 	 *
 	 * ## OPTIONS
 	 *
 	 * [--api=<api-key>]
-	 * : ED API Key.
+	 * : EasyEngine Dashboard API key.
 	 *
 	 * [--org=<org-name>]
-	 * : ED Organization name in which server needs to be added.
+	 * : EasyEngine Dashboard organization name in which the server needs to be added.
 	 *
 	 * [--ip=<ip-address>]
 	 * : Public IP address of the server.
@@ -41,8 +41,8 @@ class Dash_Command extends EE_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     # Integrate server on EasyDash dashboard
-	 *     $ ee dash init --api=xxx
+	 *     # Integrate the server with the EasyEngine Dashboard
+	 *     $ ee dash init --api=xxx --org=my-org
 	 *
 	 */
 	public function init( $args, $assoc_args ) {
@@ -59,11 +59,11 @@ class Dash_Command extends EE_Command {
 		$organization = trim( $organization );
 
 		if ( empty( $api_key ) ) {
-			EE::error( 'Please provide an EasyDash API key using the --api=<token:key> flag.' );
+			EE::error( 'Please provide an EasyEngine Dashboard API key using the --api=<token:key> flag.' );
 		}
 
 		if ( empty( $organization ) ) {
-			EE::error( 'Please provide an EasyDash organization name using the --org=<org-name> flag.' );
+			EE::error( 'Please provide an EasyEngine Dashboard organization name using the --org=<org-name> flag.' );
 		}
 
 		$this->pre_checks();
@@ -117,12 +117,12 @@ class Dash_Command extends EE_Command {
 			EE::launch( 'hostnamectl set-hostname ' . $hostname );
 		}
 
-		// Check if the server already exists on EasyDash
+		// Check if the server already exists on EasyEngine Dashboard
 		if ( $this->server_exists_on_easydash( $api_key, $public_ipv4, $organization ) ) {
-			EE::log( 'Server with IP ' . $public_ipv4 . ' already exists on EasyDash. Skipping server addition.' );
+			EE::log( 'Server with IP ' . $public_ipv4 . ' already exists on EasyEngine Dashboard. Skipping server addition.' );
 		} else {
 
-			// @todo: Check if the server is already integrated with EasyDash.
+			// @todo: Check if the server is already integrated with EasyEngine Dashboard.
 
 			$ssh_key_exists = EE::launch( 'grep -q "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILbESQqRcGdwnn/u1BkDCD9rDiFqgDhTHBHIIasaDpWV EasyEngine" /root/.ssh/authorized_keys' );
 			if ( 0 !== $ssh_key_exists->return_code ) {
@@ -137,7 +137,7 @@ class Dash_Command extends EE_Command {
 
 			$server_data_json = json_encode( $server_data );
 
-			// Make the API call to add server to EasyDash
+			// Make the API call to add server to EasyEngine Dashboard
 			try {
 				$server_response = http_request(
 					'POST',
@@ -147,14 +147,14 @@ class Dash_Command extends EE_Command {
 				);
 
 				if ( $server_response->success ) {
-					EE::success( 'Server integrated with EasyDash successfully. Please wait for sometime for site data to populate on EasyDash.' );
+					EE::success( 'Server integrated with EasyEngine Dashboard successfully. Please wait for sometime for site data to populate on EasyEngine Dashboard.' );
 					exit( 0 );
 				} else {
-					EE::warning( 'Failed to integrate server with EasyDash. Response: ' . $server_response->body );
+					EE::warning( 'Failed to integrate server with EasyEngine Dashboard. Response: ' . $server_response->body );
 					EE::warning( 'Status code: ' . $server_response->status_code );
 				}
 			} catch ( \RuntimeException $e ) {
-				EE::error( 'Error connecting to EasyDash API: ' . $e->getMessage() );
+				EE::error( 'Error connecting to EasyEngine Dashboard API: ' . $e->getMessage() );
 				return;
 			}
 		}
@@ -184,9 +184,9 @@ class Dash_Command extends EE_Command {
 			$public_dir = str_replace( '/var/www/htdocs', '', $site->site_container_fs_path );
 			$public_dir = ltrim( $public_dir, '/' );
 
-			// Check if the site already exists on EasyDash
+			// Check if the site already exists on EasyEngine Dashboard
 			if ( $this->site_exists_on_easydash( $api_key, $site->site_url, $organization ) ) {
-				EE::log( 'Site ' . $site->site_url . ' already exists on EasyDash. Skipping site addition.' );
+				EE::log( 'Site ' . $site->site_url . ' already exists on EasyEngine Dashboard. Skipping site addition.' );
 				if ( ! $site->site_enabled ) {
 					EE::launch( "ee site disable $site->site_url" );
 				}
@@ -274,7 +274,7 @@ class Dash_Command extends EE_Command {
 
 			// If php version is < 8.1, then skip adding the site.
 			if ( $site->site_type !== 'html' && version_compare( $site->php_version, '8.1', '<' ) ) {
-				EE::warning( "Skipping site {$site->site_url} integration with EasyDash as PHP version is less than 8.1." );
+				EE::warning( "Skipping site {$site->site_url} integration with EasyEngine Dashboard as PHP version is less than 8.1." );
 				continue;
 			}
 
@@ -289,12 +289,12 @@ class Dash_Command extends EE_Command {
 				);
 
 				if ( $site_response->success ) {
-					EE::success( "Site {$site->site_url} integrated with EasyDash successfully." );
+					EE::success( "Site {$site->site_url} integrated with EasyEngine Dashboard successfully." );
 				} else {
-					EE::error( "Failed to integrate site {$site->site_url} with EasyDash. Response: " . $site_response->body );
+					EE::error( "Failed to integrate site {$site->site_url} with EasyEngine Dashboard. Response: " . $site_response->body );
 				}
 			} catch ( \RuntimeException $e ) {
-				EE::error( "Error connecting to EasyDash API for site {$site->site_url}: " . $e->getMessage() );
+				EE::error( "Error connecting to EasyEngine Dashboard API for site {$site->site_url}: " . $e->getMessage() );
 			}
 		}
 
@@ -302,9 +302,9 @@ class Dash_Command extends EE_Command {
 	}
 
 	/**
-	 * Checks if a server already exists on EasyDash based on its IP address.
+	 * Checks if a server already exists on EasyEngine Dashboard based on its IP address.
 	 *
-	 * @param string $api_key The EasyDash API key.
+	 * @param string $api_key The EasyEngine Dashboard API key.
 	 * @param string $public_ipv4 The public IPv4 address of the server.
 	 *
 	 * @return bool True if the server exists, false otherwise.
@@ -325,8 +325,8 @@ class Dash_Command extends EE_Command {
 			EE::debug( 'Request URL: ' . $server_api_url );
 			EE::debug( 'Request Headers: ' . json_encode( $headers ) );
 			EE::debug( 'Request data: ' . json_encode( $data ) );
-			EE::debug( 'Checking if server with IP ' . $public_ipv4 . ' exists on EasyDash...' );
-			EE::debug( 'Response from EasyDash: ' . $server_response->body );
+			EE::debug( 'Checking if server with IP ' . $public_ipv4 . ' exists on EasyEngine Dashboard...' );
+			EE::debug( 'Response from EasyEngine Dashboard: ' . $server_response->body );
 
 			if ( $server_response->success ) {
 				$server_data = json_decode( $server_response->body, true );
@@ -346,7 +346,7 @@ class Dash_Command extends EE_Command {
 				return false; // Assume server doesn't exist to avoid potential issues
 			}
 		} catch ( \RuntimeException $e ) {
-			EE::warning( 'Error connecting to EasyDash API to get server list.' );
+			EE::warning( 'Error connecting to EasyEngine Dashboard API to get server list.' );
 			EE::debug( 'Error message: ' . $e->getMessage() );
 			EE::debug( 'Error code: ' . $e->getCode() );
 			return false; // Assume server doesn't exist to avoid potential issues
@@ -355,9 +355,9 @@ class Dash_Command extends EE_Command {
 
 
 	/**
-	 * Checks if a site already exists on EasyDash.
+	 * Checks if a site already exists on EasyEngine Dashboard.
 	 *
-	 * @param string $api_key The EasyDash API key.
+	 * @param string $api_key The EasyEngine Dashboard API key.
 	 * @param string $site_url The URL of the site.
 	 * @param string $hostname The hostname of the server.
 	 *
@@ -394,13 +394,13 @@ class Dash_Command extends EE_Command {
 				return false; // Assume site doesn't exist to avoid potential issues
 			}
 		} catch ( \RuntimeException $e ) {
-			EE::warning( 'Error connecting to EasyDash API to get site list: ' . $e->getMessage() );
+			EE::warning( 'Error connecting to EasyEngine Dashboard API to get site list: ' . $e->getMessage() );
 			return false; // Assume site doesn't exist to avoid potential issues
 		}
 	}
 
 	/**
-	 * Do initial checks if server is eligible for EasyDash integration.
+	 * Do initial checks if server is eligible for EasyEngine Dashboard integration.
 	 */
 	private function pre_checks() {
 
@@ -408,7 +408,7 @@ class Dash_Command extends EE_Command {
 		$os = trim( EE::launch( 'lsb_release -i' )->stdout );
 		// Check if the server is running Ubuntu or Debian.
 		if ( false === strpos( $os, 'Ubuntu' ) && false === strpos( $os, 'Debian' ) ) {
-			EE::error( 'EasyDash integration is only supported on Ubuntu or Debian.' );
+			EE::error( 'EasyEngine Dashboard integration is only supported on Ubuntu or Debian.' );
 		}
 
 		// Check if the server is running Ubuntu 22.04 or later.
@@ -416,14 +416,14 @@ class Dash_Command extends EE_Command {
 		$version_string = str_replace('Release:', '', $ubuntu_version);
 		$version = trim($version_string);
 		if (version_compare($version, '22.04', '<')) {
-			EE::error( 'EasyDash integration is only supported on Ubuntu 22.04 or later.' );
+			EE::error( 'EasyEngine Dashboard integration is only supported on Ubuntu 22.04 or later.' );
 		}
 
 		// Check if rclone config is present. If there, show confirm msg to continue.
 		// if ( file_exists( '~/.config/rclone/rclone.conf' ) ) {
-		// 	$confirm = EE::confirm( 'Rclone config file found. Do you want to continue with EasyDash integration?', [], false );
+		// 	$confirm = EE::confirm( 'Rclone config file found. Do you want to continue with EasyEngine Dashboard integration?', [], false );
 		// 	if ( ! $confirm ) {
-		// 		EE::error( 'EasyDash integration aborted by user.' );
+		// 		EE::error( 'EasyEngine Dashboard integration aborted by user.' );
 		// 	}
 		// }
 	}
