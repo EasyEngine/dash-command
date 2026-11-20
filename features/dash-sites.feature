@@ -92,8 +92,10 @@ Feature: ee dash init site sync
       {"site_type": "wp", "multisite": "subdir", "table_prefix": "wp_"}
       """
 
+  # New sites store `--php=latest` as the concrete default version, so the `latest` row older releases stored is set directly.
   Scenario: A site on PHP "latest" is posted with the version it really runs
-    Given the test site 'bh-dash-command-4.test' exists, created with '--type=php --php=latest'
+    Given the test site 'bh-dash-command-4.test' exists, created with '--type=php'
+    And I set the column 'php_version' to 'latest' for the site 'bh-dash-command-4.test' in the EasyEngine database
     When I run "bin/ee dash init --api=bh-dash-{RUN_ID} --org=bh-dash-org --ip=203.0.113.10 --hostname=bh-dash.example.test" in the EasyDash sandbox
     Then the return code should be 0
     And the site 'bh-dash-command-4.test' should have 'php_version' set to 'latest' in the EasyEngine database
